@@ -1,5 +1,7 @@
 package com.example.trackin.screen
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,8 +14,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -28,13 +36,35 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.example.trackin.data.SignUpData
+import com.example.trackin.respond.JWTRespond
+import com.example.trackin.service.SignUpService
+import com.google.gson.Gson
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUp() {
+fun SignUp(
+    navController: NavController,
+    baseUrl: String,
+    context: Context = LocalContext.current
+) {
+    var showPassword by remember { mutableStateOf(false) }
+    var showConfirmPassword by remember { mutableStateOf(false) }
+
     var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     Box(
@@ -74,7 +104,7 @@ fun SignUp() {
             Spacer(modifier = Modifier.height(56.dp))
             Column {
                 Text(
-                    text = "Username",
+                    text = "Full Name",
                     fontSize = 15.sp,
                     modifier = Modifier
                         .padding(start = 16.dp, bottom = 8.dp)
@@ -88,7 +118,29 @@ fun SignUp() {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Column {
+                Text(
+                    text = "Email",
+                    fontSize = 15.sp,
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 8.dp)
+                        .fillMaxWidth()
+                )
+                TextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    shape = RoundedCornerShape(100),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -108,7 +160,33 @@ fun SignUp() {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (showPassword) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    singleLine = true,
+                    trailingIcon = {
+                        val image = if (showPassword) {
+                            Icons.Default.VisibilityOff
+                        } else {
+                            Icons.Default.Visibility
+                        }
+                        val description = if (showPassword) {
+                            "Hide password"
+                        } else {
+                            "Show password"
+                        }
+                        IconButton(onClick = {
+                            showPassword = !showPassword
+                        }) {
+                            Icon(imageVector = image, contentDescription = description)
+                        }
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
@@ -128,12 +206,116 @@ fun SignUp() {
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    visualTransformation = if (showConfirmPassword) {
+                        VisualTransformation.None
+                    } else {
+                        PasswordVisualTransformation()
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+                    singleLine = true,
+                    trailingIcon = {
+                        val image = if (showConfirmPassword) {
+                            Icons.Default.VisibilityOff
+                        } else {
+                            Icons.Default.Visibility
+                        }
+                        val description = if (showConfirmPassword) {
+                            "Hide password"
+                        } else {
+                            "Show password"
+                        }
+                        IconButton(onClick = {
+                            showConfirmPassword = !showConfirmPassword
+                        }) {
+                            Icon(imageVector = image, contentDescription = description)
+                        }
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(15.dp))
             Button(
-                onClick = { /*TODO*/ },
+                onClick = {
+                    if (password != confirmPassword) {
+
+                        Toast
+                            .makeText(
+                                context,
+                                "Password and Confirm Password doesn't match",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    } else if (username == "") {
+                        Toast
+                            .makeText(
+                                context,
+                                "Full Name cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    } else if (email == "") {
+                        Toast
+                            .makeText(
+                                context,
+                                "Email cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    } else if (password == "") {
+                        Toast
+                            .makeText(
+                                context,
+                                "Password cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    } else if (confirmPassword == "") {
+                        Toast
+                            .makeText(
+                                context,
+                                "Confirm Password cannot be empty",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                    } else {
+                        val retrofit = Retrofit
+                            .Builder()
+                            .baseUrl(baseUrl)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+                            .create(SignUpService::class.java)
+                        val call = retrofit.saveData(
+                            SignUpData(
+                                username = username,
+                                email = email,
+                                password = password
+                            )
+                        )
+                        call.enqueue(
+                            object : Callback<JWTRespond>{
+                                override fun onResponse(
+                                    call: Call<JWTRespond>,
+                                    response: Response<JWTRespond>
+                                ){
+                                    if (response.code() == 200){
+                                        navController.navigate("SignIn")
+                                    }else{
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "Email already exists",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                    }
+                                }
+                                override fun onFailure(call: Call<JWTRespond>, t: Throwable) {
+                                    Toast.makeText(
+                                        context,
+                                        "Error: ${t.message}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        )
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -150,7 +332,9 @@ fun SignUp() {
                     text = "Already have an account?",
                     fontSize = 13.sp,
                 )
-                TextButton(onClick = { /*TODO*/ }) {
+                TextButton(onClick = {
+                    navController.navigate("SignIn")
+                }) {
                     Text(
                         text = "Sign In",
                         fontSize = 13.sp

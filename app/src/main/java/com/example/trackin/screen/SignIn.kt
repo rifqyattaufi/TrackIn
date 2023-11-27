@@ -2,6 +2,7 @@ package com.example.trackin.screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -17,10 +18,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignIn(modifier: Modifier = Modifier) {
+fun SignIn(navController: NavController, baseUrl: String) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
@@ -43,6 +45,15 @@ fun SignIn(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(10.dp))
         Button(onClick = { /*TODO*/ }) {
             Text(text = "Login")
+        }
+        Row {
+            Text(text = "Don't have an account?")
+            Spacer(modifier = Modifier.height(10.dp))
+            Button(onClick = {
+                navController.navigate("SignUp")
+            }) {
+                Text(text = "Sign Up")
+            }
         }
     }
 }
