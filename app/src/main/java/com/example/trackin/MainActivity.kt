@@ -28,10 +28,10 @@ class MainActivity : ComponentActivity() {
             val jwt = sharedPreferences.getString("jwt", "")
             val baseUrl = "http://10.0.2.2:1337/api/"
 
-            if (jwt.equals("")) {
-                startDestination = "SignIn"
+            startDestination = if (jwt.equals("")) {
+                "SignIn"
             } else {
-                startDestination = "Home"
+                "Home"
             }
 
             AppTheme {
