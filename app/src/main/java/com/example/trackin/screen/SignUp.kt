@@ -46,12 +46,14 @@ import androidx.navigation.NavController
 import com.example.trackin.data.SignUpData
 import com.example.trackin.respond.JWTRespond
 import com.example.trackin.service.SignUpService
-import com.google.gson.Gson
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.AccessController.getContext
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -267,13 +269,6 @@ fun SignUp(
                                 "Password cannot be empty",
                                 Toast.LENGTH_SHORT
                             ).show()
-                    } else if (confirmPassword == "") {
-                        Toast
-                            .makeText(
-                                context,
-                                "Confirm Password cannot be empty",
-                                Toast.LENGTH_SHORT
-                            ).show()
                     } else {
                         val retrofit = Retrofit
                             .Builder()
@@ -289,27 +284,38 @@ fun SignUp(
                             )
                         )
                         call.enqueue(
-                            object : Callback<JWTRespond>{
+                            object : Callback<JWTRespond> {
                                 override fun onResponse(
                                     call: Call<JWTRespond>,
-                                    response: Response<JWTRespond>
-                                ){
-                                    if (response.code() == 200){
+                                    response: Response<JWTRespond>,
+                                ) {
+                                    if (response.code() == 200) {
                                         navController.navigate("SignIn")
-                                    }else{
-                                        Toast
-                                            .makeText(
+                                    } else {
+                                        try {
+                                            val jObjError =
+                                                JSONObject(response.errorBody()!!.string())
+                                            Toast.makeText(
                                                 context,
-                                                "Email already exists",
-                                                Toast.LENGTH_SHORT
+                                                jObjError.getJSONObject("error")
+                                                    .getString("message"),
+                                                Toast.LENGTH_LONG
                                             ).show()
+                                        } catch (e: Exception) {
+                                            Toast.makeText(
+                                                context,
+                                                e.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
                                     }
                                 }
+
                                 override fun onFailure(call: Call<JWTRespond>, t: Throwable) {
                                     Toast.makeText(
                                         context,
                                         "Error: ${t.message}",
-                                        Toast.LENGTH_SHORT
+                                        Toast.LENGTH_LONG
                                     ).show()
                                 }
                             }
