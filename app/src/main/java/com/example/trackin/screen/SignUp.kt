@@ -288,7 +288,7 @@ fun SignUp(
                                     call: Call<JWTRespond>,
                                     response: Response<JWTRespond>,
                                 ) {
-                                    if (response.code() == 200) {
+                                    if (response.isSuccessful) {
                                         navController.navigate("SignIn")
                                     } else {
                                         try {
