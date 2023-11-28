@@ -45,7 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.trackin.data.SignUpData
 import com.example.trackin.respond.JWTRespond
-import com.example.trackin.service.SignUpService
+import com.example.trackin.service.AuthService
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
@@ -274,7 +274,7 @@ fun SignUp(
                             .baseUrl(baseUrl)
                             .addConverterFactory(GsonConverterFactory.create())
                             .build()
-                            .create(SignUpService::class.java)
+                            .create(AuthService::class.java)
                         val call = retrofit.saveData(
                             SignUpData(
                                 username = username,

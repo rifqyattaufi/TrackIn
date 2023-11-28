@@ -1,5 +1,7 @@
 package com.example.trackin.screen
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,13 +19,28 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.trackin.PreferencesManager
+import com.example.trackin.data.SignInData
+import com.example.trackin.respond.JWTRespond
+import com.example.trackin.service.AuthService
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignIn(navController: NavController, baseUrl: String) {
-    var username by remember { mutableStateOf("") }
+fun SignIn(
+    navController: NavController,
+    baseUrl: String,
+    context: Context = LocalContext.current
+) {
+    val preferencesManager = remember { PreferencesManager(context) }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -33,9 +50,9 @@ fun SignIn(navController: NavController, baseUrl: String) {
     {
         Text(text = "Sign In")
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text("Username") }
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") }
         )
         OutlinedTextField(
             value = password,
@@ -43,7 +60,58 @@ fun SignIn(navController: NavController, baseUrl: String) {
             label = { Text("Password") }
         )
         Spacer(modifier = Modifier.height(10.dp))
-        Button(onClick = { /*TODO*/ }) {
+        Button(onClick = {
+            if (email == "") {
+                Toast.makeText(
+                    context,
+                    "Email cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else if (password == "") {
+                Toast.makeText(
+                    context,
+                    "Password cannot be empty",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val retrofit = Retrofit
+                    .Builder()
+                    .baseUrl(baseUrl)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                    .create(AuthService::class.java)
+                val call = retrofit.login(
+                    SignInData(identifier = email, password = password)
+                )
+                call.enqueue(
+                    object : Callback<JWTRespond> {
+                        override fun onResponse(
+                            call: Call<JWTRespond>,
+                            response: Response<JWTRespond>
+                        ) {
+                            if (response.isSuccessful) {
+                                preferencesManager.saveData("jwt", response.body()?.jwt!!)
+                                navController.navigate("Home")
+                            } else {
+                                Toast.makeText(
+                                    context,
+                                    "Invalid email or password",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<JWTRespond>, t: Throwable) {
+                            Toast.makeText(
+                                context,
+                                "Error: ${t.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                )
+            }
+        }) {
             Text(text = "Login")
         }
         Row {
