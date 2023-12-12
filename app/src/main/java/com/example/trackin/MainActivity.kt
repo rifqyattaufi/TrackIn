@@ -5,8 +5,11 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +20,7 @@ import com.example.trackin.screen.SignIn
 import com.example.trackin.screen.SignUp
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,11 +32,13 @@ class MainActivity : ComponentActivity() {
             val jwt = sharedPreferences.getString("jwt", "")
             val baseUrl = "http://10.0.2.2:1337/api/"
 
-            startDestination = if (jwt.equals("")) {
-                "SignIn"
-            } else {
-                "Home"
-            }
+            startDestination = "Home"
+
+//            startDestination = if (jwt.equals("")) {
+//                "SignIn"
+//            } else {
+//                "Home"
+//            }
 
             AppTheme {
                 Surface(
