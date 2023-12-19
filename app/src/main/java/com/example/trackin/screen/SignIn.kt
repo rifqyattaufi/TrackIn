@@ -1,6 +1,7 @@
 package com.example.trackin.screen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -91,6 +92,10 @@ fun SignIn(
                         ) {
                             if (response.isSuccessful) {
                                 preferencesManager.saveData("jwt", response.body()?.jwt!!)
+                                preferencesManager.saveData(
+                                    "id",
+                                    response.body()?.user?.id.toString()
+                                )
                                 navController.navigate("Home")
                             } else {
                                 Toast.makeText(
