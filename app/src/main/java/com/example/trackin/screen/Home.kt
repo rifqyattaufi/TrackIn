@@ -63,7 +63,11 @@ import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun Home(navController: NavController, baseUrl: String, context: Context = LocalContext.current) {
+fun Home(
+    baseUrl: String,
+    context: Context = LocalContext.current,
+    innerPadding: PaddingValues
+) {
     val listSchedule = remember { mutableStateListOf<date_and_times>() }
     val preferencesManager = remember { PreferencesManager(context) }
     val retrofit = Retrofit.Builder()
@@ -117,236 +121,145 @@ fun Home(navController: NavController, baseUrl: String, context: Context = Local
         }
     )
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("Dashboard")
-                },
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(
+                bottom = innerPadding.calculateBottomPadding() + 18.dp,
+                top = innerPadding.calculateTopPadding(),
+                start = 18.dp,
+                end = 18.dp
             )
-        },
-        bottomBar = {
-            BottomAppBar(
-                modifier = Modifier.clip(
-                    shape = RoundedCornerShape(
-                        topStart = 25.dp,
-                        topEnd = 25.dp
-                    )
-                ),
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(18.dp)
+    ) {
+        stickyHeader {
+            Column(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(25.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(vertical = 7.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Row(
+                Text("Today Schedule", fontSize = 16.sp)
+            }
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(25.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp, 0.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                        .clip(shape = RoundedCornerShape(25.dp))
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(Icons.Outlined.Home, contentDescription = "home")
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(Icons.Outlined.List, contentDescription = "list")
-                    }
-                    IconButton(
-                        onClick = { /*TODO*/ },
-                        colors = IconButtonDefaults.iconButtonColors(
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        modifier = Modifier.size(50.dp)
-                    ) {
-                        Icon(
-                            Icons.Rounded.Add,
-                            contentDescription = "add",
-                            modifier = Modifier.size(48.dp)
-                        )
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(Icons.Outlined.Notifications, contentDescription = "home")
-                    }
-                    Button(
-                        onClick = { /*TODO*/ },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.background,
-                            contentColor = MaterialTheme.colorScheme.onBackground
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
-                        contentPadding = PaddingValues(0.dp)
-                    ) {
-                        Icon(Icons.Outlined.AccountCircle, contentDescription = "home")
+                    val colorBorder = MaterialTheme.colorScheme.onBackground
+                    listSchedule.forEach { schedule ->
+                        Column(
+                            modifier = Modifier
+                                .drawBehind {
+                                    val borderSize = 2.dp.toPx()
+                                    drawLine(
+                                        color = colorBorder,
+                                        start = Offset(0f, size.height),
+                                        end = Offset(size.width, size.height),
+                                        strokeWidth = borderSize
+                                    )
+                                }
+                        ) {
+                            val timeStart = schedule.attributes?.start?.split(":")
+                            val timeEnd = schedule.attributes?.end?.split(":")
+                            Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                            Text(
+                                text = "${timeStart!![0]}:${timeStart[1]}-${timeEnd!![0]}:${timeEnd[1]}",
+                                textAlign = TextAlign.End,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                            Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                        }
                     }
                 }
             }
-        },
-    ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(
-                    bottom = innerPadding.calculateBottomPadding() + 18.dp,
-                    top = innerPadding.calculateTopPadding(),
-                    start = 18.dp,
-                    end = 18.dp
-                )
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(18.dp)
-        ) {
-            stickyHeader {
-                Column(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(25.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(vertical = 7.dp, horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    Text("Today Schedule", fontSize = 16.sp)
-                }
+        }
+        stickyHeader {
+            Column(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(25.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(vertical = 7.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text("Today Task", fontSize = 16.sp)
             }
-            item {
+        }
+        item {
+            Column(
+                modifier = Modifier
+                    .clip(shape = RoundedCornerShape(25.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .fillMaxSize()
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 Column(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(25.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .fillMaxSize()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(15.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
+                    val colorBorder = MaterialTheme.colorScheme.onBackground
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(25.dp))
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        val colorBorder = MaterialTheme.colorScheme.onBackground
-                        listSchedule.forEach { schedule ->
-                            Column(
-                                modifier = Modifier
-                                    .drawBehind {
-                                        val borderSize = 2.dp.toPx()
-                                        drawLine(
-                                            color = colorBorder,
-                                            start = Offset(0f, size.height),
-                                            end = Offset(size.width, size.height),
-                                            strokeWidth = borderSize
-                                        )
-                                    }
-                            ) {
-                                val timeStart = schedule.attributes?.start?.split(":")
-                                val timeEnd = schedule.attributes?.end?.split(":")
-                                Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
-                                Text(
-                                    text = "${timeStart!![0]}:${timeStart[1]}-${timeEnd!![0]}:${timeEnd[1]}",
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.fillMaxWidth()
+                            .drawBehind {
+                                val borderSize = 2.dp.toPx()
+                                drawLine(
+                                    color = colorBorder,
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = borderSize
                                 )
-                                Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
                             }
-                        }
+                    ) {
+                        Text(text = "Verifikasi dan Validasi")
+                        Text(
+                            text = "10.00-13.00",
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(text = "Class: 2.06")
                     }
-                }
-            }
-            stickyHeader {
-                Column(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(25.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(vertical = 7.dp, horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
-                    Text("Today Task", fontSize = 16.sp)
-                }
-            }
-            item {
-                Column(
-                    modifier = Modifier
-                        .clip(shape = RoundedCornerShape(25.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .fillMaxSize()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
                     Column(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(25.dp))
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(15.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                            .drawBehind {
+                                val borderSize = 2.dp.toPx()
+                                drawLine(
+                                    color = colorBorder,
+                                    start = Offset(0f, size.height),
+                                    end = Offset(size.width, size.height),
+                                    strokeWidth = borderSize
+                                )
+                            }
                     ) {
-                        val colorBorder = MaterialTheme.colorScheme.onBackground
-                        Column(
-                            modifier = Modifier
-                                .drawBehind {
-                                    val borderSize = 2.dp.toPx()
-                                    drawLine(
-                                        color = colorBorder,
-                                        start = Offset(0f, size.height),
-                                        end = Offset(size.width, size.height),
-                                        strokeWidth = borderSize
-                                    )
-                                }
-                        ) {
-                            Text(text = "Verifikasi dan Validasi")
-                            Text(
-                                text = "10.00-13.00",
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(text = "Class: 2.06")
-                        }
-                        Column(
-                            modifier = Modifier
-                                .drawBehind {
-                                    val borderSize = 2.dp.toPx()
-                                    drawLine(
-                                        color = colorBorder,
-                                        start = Offset(0f, size.height),
-                                        end = Offset(size.width, size.height),
-                                        strokeWidth = borderSize
-                                    )
-                                }
-                        ) {
-                            Text(text = "Verifikasi dan Validasi")
-                            Text(
-                                text = "10.00-13.00",
-                                textAlign = TextAlign.End,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                            Text(text = "Class: 2.06")
-                        }
-
+                        Text(text = "Verifikasi dan Validasi")
+                        Text(
+                            text = "10.00-13.00",
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Text(text = "Class: 2.06")
                     }
+
                 }
             }
         }

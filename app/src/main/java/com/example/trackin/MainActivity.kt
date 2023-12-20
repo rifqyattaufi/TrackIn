@@ -18,6 +18,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.SignIn
 import com.example.trackin.screen.SignUp
+import com.example.trackin.screen.layout.Scaffold as ScaffoldLayout
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -32,13 +33,13 @@ class MainActivity : ComponentActivity() {
             val jwt = sharedPreferences.getString("jwt", "")
             val baseUrl = "http://10.0.2.2:1337/api/"
 
-            startDestination = "SignIn"
+//            startDestination = "SignIn"
 
-//            startDestination = if (jwt.equals("")) {
-//                "SignIn"
-//            } else {
-//                "Home"
-//            }
+            startDestination = if (jwt.equals("")) {
+                "SignIn"
+            } else {
+                "Home"
+            }
 
             AppTheme {
                 Surface(
@@ -55,7 +56,13 @@ class MainActivity : ComponentActivity() {
                             SignUp(navController = navController, baseUrl = baseUrl)
                         }
                         composable("Home") {
-                            Home(navController = navController, baseUrl = baseUrl)
+                            ScaffoldLayout(
+                                navController = navController,
+                                baseUrl = baseUrl,
+                                content = {
+                                    Home(baseUrl = baseUrl, innerPadding = it)
+                                }
+                            )
                         }
                     }
                 }
