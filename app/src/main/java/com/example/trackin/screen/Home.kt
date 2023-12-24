@@ -1,38 +1,20 @@
 package com.example.trackin.screen
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AccountCircle
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.List
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -45,10 +27,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.trackin.PreferencesManager
 import com.example.trackin.respond.ApiResponse
-import com.example.trackin.respond.date_and_time_respond
 import com.example.trackin.respond.date_and_times
 import com.example.trackin.service.date_and_time_service
 import org.json.JSONObject
@@ -61,7 +41,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@SuppressLint("SimpleDateFormat")
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Home(
     baseUrl: String,
@@ -86,7 +67,7 @@ fun Home(
                 call: Call<ApiResponse<List<date_and_times>>>,
                 response: Response<ApiResponse<List<date_and_times>>>
             ) {
-                if (response.isSuccessful()) {
+                if (response.isSuccessful) {
                     listSchedule.clear()
                     response.body()?.data!!.forEach { schedule ->
                         listSchedule.add(schedule)
