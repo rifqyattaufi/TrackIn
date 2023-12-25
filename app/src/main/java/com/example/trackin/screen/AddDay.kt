@@ -1,6 +1,8 @@
 package com.example.trackin.screen
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -48,7 +49,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
+import com.example.trackin.data.DateAndTimesData
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDay(
@@ -60,6 +63,8 @@ fun AddDay(
     titleData: String?,
     navController: NavController
 ) {
+    var dateAndTimesData: List<DateAndTimesData>
+
     var title by remember { mutableStateOf(titleData) }
     var room by remember { mutableStateOf(roomData) }
 
@@ -88,6 +93,17 @@ fun AddDay(
         )
     }
 
+    var selectedHourEnd by remember { mutableIntStateOf(0) }
+    var selectedMinuteEnd by remember { mutableIntStateOf(0) }
+    var showDialogEnd by remember { mutableStateOf(false) }
+    val timePickerStateEnd = remember {
+        TimePickerState(
+            initialHour = selectedHourEnd,
+            initialMinute = selectedMinuteEnd,
+            is24Hour = true
+        )
+    }
+
     if (showDialog) {
         BasicAlertDialog(
             modifier = Modifier
@@ -96,7 +112,9 @@ fun AddDay(
                     color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(size = 12.dp)
                 ),
-            onDismissRequest = { showDialog = false }
+            onDismissRequest = {
+                showDialog = false
+            }
         ) {
             Column(
                 modifier = Modifier
@@ -128,6 +146,59 @@ fun AddDay(
                             showDialog = false
                             selectedHour = timePickerState.hour
                             selectedMinute = timePickerState.minute
+                            start = "${timePickerState.hour}:${timePickerState.minute}"
+                        }
+                    ) {
+                        Text(text = "Confirm")
+                    }
+                }
+            }
+        }
+    }
+
+    if (showDialogEnd) {
+        BasicAlertDialog(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.surface,
+                    shape = RoundedCornerShape(size = 12.dp)
+                ),
+            onDismissRequest = {
+                showDialogEnd = false
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(
+                        color = Color.LightGray.copy(alpha = 0.3f)
+                    )
+                    .padding(top = 28.dp, start = 20.dp, end = 20.dp, bottom = 12.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // time picker
+                TimePicker(state = timePickerStateEnd)
+
+                // buttons
+                Row(
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    // dismiss button
+                    TextButton(onClick = { showDialogEnd = false }) {
+                        Text(text = "Dismiss")
+                    }
+
+                    // confirm button
+                    TextButton(
+                        onClick = {
+                            showDialogEnd = false
+                            selectedHourEnd = timePickerStateEnd.hour
+                            selectedMinuteEnd = timePickerStateEnd.minute
+                            end = "${timePickerStateEnd.hour}:${timePickerStateEnd.minute}"
                         }
                     ) {
                         Text(text = "Confirm")
@@ -147,107 +218,118 @@ fun AddDay(
             )
             .fillMaxSize()
     ) {
-        LazyColumn(
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         )
         {
-            for (i in 1..meetData.toInt()) {
-                item {
-                    Column(
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(
+                        shape = RoundedCornerShape(25.dp)
+                    )
+                    .background(MaterialTheme.colorScheme.secondary)
+                    .padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Column {
+                    OutlinedTextField(
+                        value = mSelectedText,
+                        onValueChange = { mSelectedText = it },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(
-                                shape = RoundedCornerShape(25.dp)
-                            )
-                            .background(MaterialTheme.colorScheme.secondary)
-                            .padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        OutlinedTextField(
-                            value = mSelectedText,
-                            onValueChange = { mSelectedText = it },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .onGloballyPositioned { coordinates ->
-                                    // This value is used to assign to
-                                    // the DropDown the same width
-                                    mTextFieldSize = coordinates.size.toSize()
-                                },
-                            label = { Text("Day") },
-                            trailingIcon = {
-                                Icon(icon, "contentDescription",
-                                    Modifier.clickable { mExpanded = !mExpanded })
+                            .onGloballyPositioned { coordinates ->
+                                // This value is used to assign to
+                                // the DropDown the same width
+                                mTextFieldSize = coordinates.size.toSize()
                             },
-                            readOnly = true,
-                        )
+                        label = { Text("Day") },
+                        trailingIcon = {
+                            Icon(icon, "contentDescription",
+                                Modifier.clickable { mExpanded = !mExpanded })
+                        },
+                        readOnly = true,
+                    )
 
-                        // Create a drop-down menu with list of cities,
-                        // when clicked, set the Text Field text as the city selected
-                        DropdownMenu(
-                            expanded = mExpanded,
-                            onDismissRequest = { mExpanded = false },
-                            modifier = Modifier
-                                .width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
-                        ) {
-                            mCities.forEach { label ->
-                                DropdownMenuItem(onClick = {
-                                    mSelectedText = label
-                                    mExpanded = false
-                                }, text = {
-                                    Text(text = label)
-                                }
-                                )
+                    // Create a drop-down menu with list of cities,
+                    // when clicked, set the Text Field text as the city selected
+                    DropdownMenu(
+                        expanded = mExpanded,
+                        onDismissRequest = { mExpanded = false },
+                        modifier = Modifier
+                            .width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
+                    ) {
+                        mCities.forEach { label ->
+                            DropdownMenuItem(onClick = {
+                                mSelectedText = label
+                                mExpanded = false
+                            }, text = {
+                                Text(text = label)
                             }
-                        }
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            OutlinedTextField(
-                                value = start,
-                                onValueChange = { start = it },
-                                label = { Text("Start") },
-                                modifier = Modifier
-                                    .fillMaxWidth(fraction = .47f),
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary
-                                ),
-                                readOnly = true,
-                                trailingIcon = {
-                                    Icon(Icons.Filled.Schedule, "contentDescription",
-                                        Modifier.clickable { showDialog = true })
-                                }
-                            )
-                            OutlinedTextField(
-                                value = end,
-                                onValueChange = { end = it },
-                                label = { Text("End") },
-                                colors = TextFieldDefaults.textFieldColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary
-                                )
                             )
                         }
                     }
                 }
-            }
-            item {
+
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    Button(onClick = {
-                        navController.popBackStack()
-                    }) {
-                        Text(text = "Previous")
-                    }
-                    Button(onClick = {
-
-                    }) {
-                        Text("Submit")
-                    }
+                    OutlinedTextField(
+                        value = start,
+                        onValueChange = { start = it },
+                        label = { Text("Start") },
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = .47f),
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        readOnly = true,
+                        trailingIcon = {
+                            Icon(Icons.Filled.Schedule, "contentDescription",
+                                Modifier.clickable { showDialog = true })
+                        }
+                    )
+                    OutlinedTextField(
+                        value = end,
+                        onValueChange = { end = it },
+                        label = { Text("End") },
+                        colors = TextFieldDefaults.textFieldColors(
+                            containerColor = MaterialTheme.colorScheme.secondary
+                        ),
+                        readOnly = true,
+                        trailingIcon = {
+                            Icon(Icons.Filled.Schedule, "contentDescription",
+                                Modifier.clickable { showDialogEnd = true })
+                        }
+                    )
                 }
             }
 
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Button(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Text(text = "Previous")
+                }
+                Button(onClick = {
+                    if (meetData.toInt() > 1) {
+
+                    } else {
+                        
+                    }
+                }) {
+                    if (meetData.toInt() > 1) {
+                        Text(text = "Next")
+                    } else {
+                        Text(text = "Submit")
+                    }
+                }
+            }
         }
     }
 }
+
