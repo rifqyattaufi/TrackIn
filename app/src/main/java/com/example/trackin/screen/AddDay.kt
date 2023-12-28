@@ -1,7 +1,10 @@
 package com.example.trackin.screen
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
+import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -35,6 +38,7 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -49,7 +53,22 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
+import com.example.trackin.data.DateAndTimeDataWrapper
 import com.example.trackin.data.DateAndTimesData
+import com.example.trackin.data.ScheduleData
+import com.example.trackin.data.ScheduleDataWrapper
+import com.example.trackin.respond.ApiResponse
+import com.example.trackin.respond.date_and_times
+import com.example.trackin.respond.schedules
+import com.example.trackin.service.DateAndTimeService
+import com.example.trackin.service.ScheduleService
+import org.json.JSONObject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,10 +82,16 @@ fun AddDay(
     titleData: String?,
     navController: NavController
 ) {
-    var dateAndTimesData: List<DateAndTimesData>
-
-    var title by remember { mutableStateOf(titleData) }
-    var room by remember { mutableStateOf(roomData) }
+    var nextOrSubmit by remember { mutableStateOf("") }
+    (if (meetData.toInt() > 1) {
+        "Next"
+    } else {
+        "Submit"
+    }).also { nextOrSubmit = it }
+    var meet by remember { mutableIntStateOf(meetData.toInt()) }
+    val dateAndTimesData = remember { mutableStateListOf<DateAndTimesData>() }
+    val sharedPreferences: SharedPreferences =
+        LocalContext.current.getSharedPreferences("auth", Context.MODE_PRIVATE)
 
     var start by remember { mutableStateOf("") }
     var end by remember { mutableStateOf("") }
@@ -85,7 +110,7 @@ fun AddDay(
     var selectedHour by remember { mutableIntStateOf(0) }
     var selectedMinute by remember { mutableIntStateOf(0) }
     var showDialog by remember { mutableStateOf(false) }
-    val timePickerState = remember {
+    var timePickerState = remember {
         TimePickerState(
             initialHour = selectedHour,
             initialMinute = selectedMinute,
@@ -103,6 +128,9 @@ fun AddDay(
             is24Hour = true
         )
     }
+    val parser = SimpleDateFormat("HH:mm")
+    val formatter = SimpleDateFormat("HH:mm")
+    val formatterInput = SimpleDateFormat("HH:mm:ss")
 
     if (showDialog) {
         BasicAlertDialog(
@@ -146,7 +174,13 @@ fun AddDay(
                             showDialog = false
                             selectedHour = timePickerState.hour
                             selectedMinute = timePickerState.minute
-                            start = "${timePickerState.hour}:${timePickerState.minute}"
+                            timePickerState = TimePickerState(
+                                initialHour = selectedHour,
+                                initialMinute = selectedMinute,
+                                is24Hour = true
+                            )
+                            start =
+                                formatter.format(parser.parse("${timePickerState.hour}:${timePickerState.minute}"))
                         }
                     ) {
                         Text(text = "Confirm")
@@ -198,7 +232,8 @@ fun AddDay(
                             showDialogEnd = false
                             selectedHourEnd = timePickerStateEnd.hour
                             selectedMinuteEnd = timePickerStateEnd.minute
-                            end = "${timePickerStateEnd.hour}:${timePickerStateEnd.minute}"
+                            end =
+                                formatter.format(parser.parse("${timePickerStateEnd.hour}:${timePickerStateEnd.minute}"))
                         }
                     ) {
                         Text(text = "Confirm")
@@ -240,8 +275,6 @@ fun AddDay(
                         modifier = Modifier
                             .fillMaxWidth()
                             .onGloballyPositioned { coordinates ->
-                                // This value is used to assign to
-                                // the DropDown the same width
                                 mTextFieldSize = coordinates.size.toSize()
                             },
                         label = { Text("Day") },
@@ -251,9 +284,6 @@ fun AddDay(
                         },
                         readOnly = true,
                     )
-
-                    // Create a drop-down menu with list of cities,
-                    // when clicked, set the Text Field text as the city selected
                     DropdownMenu(
                         expanded = mExpanded,
                         onDismissRequest = { mExpanded = false },
@@ -311,22 +341,135 @@ fun AddDay(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Button(onClick = {
-                    navController.popBackStack()
+                    if (meet == meetData.toInt()) {
+                        navController.popBackStack()
+                    } else {
+                        mSelectedText = dateAndTimesData.last().day
+                        start = dateAndTimesData.last().start
+                        end = dateAndTimesData.last().end
+                        dateAndTimesData.dropLast(1)
+                        meet += 1
+                        nextOrSubmit = "Next"
+                    }
                 }) {
                     Text(text = "Previous")
                 }
                 Button(onClick = {
-                    if (meetData.toInt() > 1) {
-
+                    dateAndTimesData.add(
+                        DateAndTimesData(
+                            mSelectedText,
+                            start,
+                            end,
+                            0
+                        )
+                    )
+                    if (meet > 1) {
+                        mSelectedText = ""
+                        start = ""
+                        end = ""
+                        meet -= 1
+                        if (meet == 1) {
+                            nextOrSubmit = "Submit"
+                        }
                     } else {
-                        
+                        val scheduleData = ScheduleDataWrapper(
+                            ScheduleData(
+                                titleData!!,
+                                roomData!!,
+                                sharedPreferences.getString("id", "0")!!.toInt()
+                            )
+                        )
+                        val retrofit = Retrofit
+                            .Builder()
+                            .baseUrl(baseUrl)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build()
+                            .create(ScheduleService::class.java)
+                        val call = retrofit.addSchedule(scheduleData)
+                        call.enqueue(
+                            object : Callback<ApiResponse<schedules>> {
+                                override fun onResponse(
+                                    call: Call<ApiResponse<schedules>>,
+                                    response: Response<ApiResponse<schedules>>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        val schedule = response.body()!!.data
+                                        dateAndTimesData.forEach {
+                                            val dateAndTimeData = DateAndTimesData(
+                                                it.day,
+                                                formatterInput.format(parser.parse(it.start)),
+                                                formatterInput.format(parser.parse(it.end)),
+                                                schedule!!.id!!
+                                            )
+                                            val retrofit2 = Retrofit
+                                                .Builder()
+                                                .baseUrl(baseUrl)
+                                                .addConverterFactory(GsonConverterFactory.create())
+                                                .build()
+                                                .create(DateAndTimeService::class.java)
+                                            val call2 = retrofit2.addDateAndTime(
+                                                DateAndTimeDataWrapper(dateAndTimeData)
+                                            )
+                                            call2.enqueue(
+                                                object :
+                                                    Callback<ApiResponse<date_and_times>> {
+                                                    override fun onResponse(
+                                                        call: Call<ApiResponse<date_and_times>>,
+                                                        response: Response<ApiResponse<date_and_times>>
+                                                    ) {
+                                                        if (response.isSuccessful) {
+                                                            Log.d("TAG", "success")
+                                                        } else {
+                                                            try {
+                                                                val jObjError =
+                                                                    JSONObject(
+                                                                        response.errorBody()!!
+                                                                            .string()
+                                                                    )
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    jObjError.getJSONObject(
+                                                                        "error"
+                                                                    )
+                                                                        .getString("message"),
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            } catch (e: Exception) {
+                                                                Toast.makeText(
+                                                                    context,
+                                                                    e.message,
+                                                                    Toast.LENGTH_LONG
+                                                                ).show()
+                                                            }
+                                                        }
+                                                    }
+
+                                                    override fun onFailure(
+                                                        call: Call<ApiResponse<date_and_times>>,
+                                                        t: Throwable
+                                                    ) {
+                                                        Log.d("TAG", "fail")
+                                                    }
+
+                                                }
+                                            )
+                                        }
+                                        navController.navigate("home")
+                                    }
+                                }
+
+                                override fun onFailure(
+                                    call: Call<ApiResponse<schedules>>,
+                                    t: Throwable
+                                ) {
+                                    TODO("Not yet implemented")
+                                }
+
+                            }
+                        )
                     }
                 }) {
-                    if (meetData.toInt() > 1) {
-                        Text(text = "Next")
-                    } else {
-                        Text(text = "Submit")
-                    }
+                    Text(text = nextOrSubmit)
                 }
             }
         }
