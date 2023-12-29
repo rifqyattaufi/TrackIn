@@ -14,4 +14,11 @@ interface date_and_time_service {
         @Query("filters[schedule][users_permissions_user][id][\$eq]") id: String?,
         @Query("sort") sort: String = "start"
     ): Call<ApiResponse<List<date_and_times>>>
+
+    @GET("date-and-times")
+    fun getListSchedule(
+        @Query("populate") populate: String = "schedule",
+        @Query("filters[schedule][users_permissions_user][id][\$eq]") id: String?,
+        @Query("sort") sort: String = "start"
+    ): Call<ApiResponse<List<date_and_times>>>
 }

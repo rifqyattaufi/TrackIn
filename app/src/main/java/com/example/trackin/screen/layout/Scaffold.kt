@@ -119,7 +119,7 @@ fun Scaffold(
                         Icon(Icons.Outlined.Home, contentDescription = "home")
                     }
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate("ListSchedule") },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.onBackground

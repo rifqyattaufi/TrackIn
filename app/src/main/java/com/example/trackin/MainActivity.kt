@@ -2,9 +2,11 @@ package com.example.trackin
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.platform.LocalContext
@@ -16,11 +18,14 @@ import com.example.compose.AppTheme
 import com.example.trackin.screen.AddDay
 import com.example.trackin.screen.AddSchedule
 import com.example.trackin.screen.Home
+import com.example.trackin.screen.ListSchedule
+import com.example.trackin.screen.ListTask
 import com.example.trackin.screen.SignIn
 import com.example.trackin.screen.SignUp
 import com.example.trackin.screen.layout.Scaffold as ScaffoldLayout
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -32,11 +37,13 @@ class MainActivity : ComponentActivity() {
 
             val baseUrl = "http://10.0.2.2:1337/api/"
 
-            val startDestination: String = if (jwt.equals("")) {
-                "SignIn"
-            } else {
-                "Home"
-            }
+            val startDestination: String = "ListSchedule"
+
+//            val startDestination: String = if (jwt.equals("")) {
+//                "SignIn"
+//            } else {
+//                "Home"
+//            }
 
             AppTheme {
                 Surface(
@@ -97,6 +104,32 @@ class MainActivity : ComponentActivity() {
                                         meetData = meetData!!,
                                         roomData = roomData,
                                         titleData = titleData,
+                                        navController = navController
+                                    )
+                                }
+                            )
+                        }
+                        composable("ListSchedule") {
+                            ScaffoldLayout(
+                                title = "List",
+                                navController = navController,
+                                content = {
+                                    ListSchedule(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        navController = navController
+                                    )
+                                }
+                            )
+                        }
+                        composable("ListTask") {
+                            ScaffoldLayout(
+                                title = "List",
+                                navController = navController,
+                                content = {
+                                    ListTask(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
                                         navController = navController
                                     )
                                 }
