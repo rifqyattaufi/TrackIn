@@ -17,6 +17,7 @@ import androidx.navigation.navArgument
 import com.example.compose.AppTheme
 import com.example.trackin.screen.AddDay
 import com.example.trackin.screen.AddSchedule
+import com.example.trackin.screen.DetailSchedule
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.ListSchedule
 import com.example.trackin.screen.ListTask
@@ -131,6 +132,20 @@ class MainActivity : ComponentActivity() {
                                         baseUrl = baseUrl,
                                         innerPadding = it,
                                         navController = navController
+                                    )
+                                }
+                            )
+                        }
+                        composable("DetailSchedule/{id}") { it ->
+                            val id = it.arguments?.getString("id")
+                            ScaffoldLayout(
+                                title = "Schedule",
+                                navController = navController,
+                                content = {
+                                    DetailSchedule(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        id = id!!,
                                     )
                                 }
                             )
