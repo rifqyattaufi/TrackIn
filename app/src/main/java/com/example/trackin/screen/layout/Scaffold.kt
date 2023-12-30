@@ -57,7 +57,8 @@ fun Scaffold(
     title: String,
     navController: NavController,
     context: Context = LocalContext.current,
-    content: @Composable (PaddingValues) -> Unit
+    content: @Composable (PaddingValues) -> Unit,
+    action: @Composable (PaddingValues) -> Unit = {},
 ) {
     var isOpen by remember { mutableStateOf(false) }
     val alpha = animateFloatAsState(
@@ -82,6 +83,9 @@ fun Scaffold(
     androidx.compose.material3.Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    action(PaddingValues(0.dp))
+                },
                 title = {
                     Text(title)
                 },
@@ -187,54 +191,56 @@ fun Scaffold(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Bottom,
         ) {
-            Column(
-                modifier = Modifier
-                    .background(
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        shape = RoundedCornerShape(25.dp)
-                    )
-                    .padding(20.dp)
-                    .width(180.dp),
-            ) {
-                OutlinedButton(
-                    onClick = {
-                        navController.navigate("AddSchedule")
-                    },
-                    modifier = Modifier.fillMaxWidth()
+            if (isOpen) {
+                Column(
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = RoundedCornerShape(25.dp)
+                        )
+                        .padding(20.dp)
+                        .width(180.dp),
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
+                    OutlinedButton(
+                        onClick = {
+                            navController.navigate("AddSchedule")
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            Icons.Outlined.Task,
-                            contentDescription = "addSchedule"
-                        )
-                        Text(
-                            text = "Add Schedule",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                Icons.Outlined.Task,
+                                contentDescription = "addSchedule"
+                            )
+                            Text(
+                                text = "Add Schedule",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
 
-                }
-                OutlinedButton(
-                    onClick = {
-                        navController.navigate("AddTask")
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                    }
+                    OutlinedButton(
+                        onClick = {
+                            navController.navigate("AddTask")
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Icon(
-                            Icons.Outlined.Book,
-                            contentDescription = "addTask",
-                        )
-                        Text(
-                            text = "Add Task",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                Icons.Outlined.Book,
+                                contentDescription = "addTask",
+                            )
+                            Text(
+                                text = "Add Task",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }

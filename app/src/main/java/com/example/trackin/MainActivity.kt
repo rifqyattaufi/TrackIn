@@ -7,6 +7,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.platform.LocalContext
@@ -16,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.compose.AppTheme
 import com.example.trackin.screen.AddDay
+import com.example.trackin.screen.AddDayOnly
 import com.example.trackin.screen.AddSchedule
 import com.example.trackin.screen.DetailSchedule
 import com.example.trackin.screen.Home
@@ -146,6 +151,32 @@ class MainActivity : ComponentActivity() {
                                         baseUrl = baseUrl,
                                         innerPadding = it,
                                         id = id!!,
+                                        navController = navController
+                                    )
+                                },
+                                action = {
+                                    IconButton(onClick = {
+                                        navController.popBackStack()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "back"
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                        composable("AddDayOnly/{id}") {
+                            val id = it.arguments?.getString("id")
+                            ScaffoldLayout(
+                                title = "Add Schedule",
+                                navController = navController,
+                                content = {
+                                    AddDayOnly(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        id = id!!,
+                                        navController = navController
                                     )
                                 }
                             )
