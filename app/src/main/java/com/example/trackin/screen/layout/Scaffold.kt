@@ -164,7 +164,7 @@ fun Scaffold(
                         Icon(Icons.Outlined.Notifications, contentDescription = "home")
                     }
                     Button(
-                        onClick = { /*TODO*/ },
+                        onClick = { navController.navigate("Profile") },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.background,
                             contentColor = MaterialTheme.colorScheme.onBackground

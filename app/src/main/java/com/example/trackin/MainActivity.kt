@@ -26,6 +26,7 @@ import com.example.trackin.screen.DetailSchedule
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.ListSchedule
 import com.example.trackin.screen.ListTask
+import com.example.trackin.screen.Profile
 import com.example.trackin.screen.SignIn
 import com.example.trackin.screen.SignUp
 import com.example.trackin.screen.layout.Scaffold as ScaffoldLayout
@@ -43,13 +44,13 @@ class MainActivity : ComponentActivity() {
 
             val baseUrl = "https://api3.tnadam.me/api/"
 
-            val startDestination: String = "ListSchedule"
+//            val startDestination: String = "ListSchedule"
 
-//            val startDestination: String = if (jwt.equals("")) {
-//                "SignIn"
-//            } else {
-//                "Home"
-//            }
+            val startDestination: String = if (jwt.equals("")) {
+                "SignIn"
+            } else {
+                "Home"
+            }
 
             AppTheme {
                 Surface(
@@ -177,6 +178,20 @@ class MainActivity : ComponentActivity() {
                                         innerPadding = it,
                                         id = id!!,
                                         navController = navController
+                                    )
+                                }
+                            )
+                        }
+                        composable("Profile") {
+                            ScaffoldLayout(
+                                title = "Profile",
+                                navController = navController,
+                                content = {
+                                    Profile(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        navController = navController,
+                                        sharedPreferences = sharedPreferences
                                     )
                                 }
                             )
