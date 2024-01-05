@@ -284,6 +284,480 @@ fun ListSchedule(
                     }
                 }
             }
+            //tuesday
+            if (listTuesday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Tuesday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listTuesday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //wednesday
+            if (listWednesday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Wednesday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listWednesday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //thursday
+            if (listThursday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Thursday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listThursday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //friday
+            if (listFriday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Friday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listFriday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //saturday
+            if (listSaturday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Saturday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listSaturday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //sunday
+            if (listSunday.isNotEmpty()) {
+                stickyHeader {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text("Sunday", fontSize = 16.sp)
+                    }
+                }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .fillMaxSize()
+                            .padding(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(shape = RoundedCornerShape(25.dp))
+                                .background(MaterialTheme.colorScheme.background)
+                                .padding(15.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            val colorBorder = MaterialTheme.colorScheme.onBackground
+                            listSunday.forEach { schedule ->
+                                Row(
+                                    modifier = Modifier
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                        .fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                    ) {
+                                        Text(text = schedule.attributes?.schedule?.data?.attributes?.title!!)
+                                        val timeStart = schedule.attributes?.start?.split(":")
+                                        val timeEnd = schedule.attributes?.end?.split(":")
+                                        Text(
+                                            text = "${timeStart?.get(0)}.${timeStart?.get(1)}-${
+                                                timeEnd?.get(
+                                                    0
+                                                )
+                                            }.${timeEnd?.get(1)}"
+                                        )
+                                        Text(text = "Class: ${schedule.attributes?.schedule?.data?.attributes?.room}")
+                                    }
+                                    Row {
+                                        IconButton(onClick = {
+                                            navController.navigate("DetailSchedule/${schedule.attributes?.schedule?.data?.id}")
+                                        }) {
+                                            Icon(
+                                                Icons.Outlined.Edit,
+                                                contentDescription = "Edit",
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

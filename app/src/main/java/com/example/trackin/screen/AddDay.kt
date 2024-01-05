@@ -173,7 +173,7 @@ fun AddDay(
                     // confirm button
                     TextButton(
                         onClick = {
-                            showDialogEnd = false
+                            showDialog = false
                             selectedHour = timePickerState.hour
                             selectedMinute = timePickerState.minute
                             start =

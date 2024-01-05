@@ -152,7 +152,8 @@ class MainActivity : ComponentActivity() {
                                         baseUrl = baseUrl,
                                         innerPadding = it,
                                         id = id!!,
-                                        navController = navController
+                                        navController = navController,
+                                        sharedPreferences = sharedPreferences
                                     )
                                 },
                                 action = {

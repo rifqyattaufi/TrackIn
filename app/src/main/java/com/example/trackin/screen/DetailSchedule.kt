@@ -1,6 +1,7 @@
 package com.example.trackin.screen
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -47,6 +48,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
+import com.example.trackin.data.DateAndTimeDataWrapper
+import com.example.trackin.data.DateAndTimesData
+import com.example.trackin.data.ScheduleData
+import com.example.trackin.data.ScheduleDataWrapper
 import com.example.trackin.respond.ApiResponse
 import com.example.trackin.respond.date_and_times
 import com.example.trackin.respond.schedules
@@ -67,7 +72,8 @@ fun DetailSchedule(
     id: String,
     innerPadding: PaddingValues,
     context: Context = LocalContext.current,
-    navController: NavController
+    navController: NavController,
+    sharedPreferences: SharedPreferences
 ) {
     var openAlertSchedule by remember { mutableStateOf(false) }
 
@@ -88,6 +94,11 @@ fun DetailSchedule(
         .addConverterFactory(GsonConverterFactory.create())
         .build()
         .create(ScheduleService::class.java)
+    val retrofitDateAndTimes = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(DateAndTimeService::class.java)
     val call = retrofit.detailSchedule(id)
     call.enqueue(
         object : Callback<ApiResponse<schedules>> {
@@ -256,18 +267,79 @@ fun DetailSchedule(
                         value = title,
                         onValueChange = { title = it },
                         label = { Text(text = "Title") },
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     OutlinedTextField(
                         value = room,
                         onValueChange = { room = it },
                         label = { Text(text = "Room") },
+                        modifier = Modifier.fillMaxWidth(),
                     )
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Button(
                             onClick = {
+                                val scheduleData = ScheduleDataWrapper(
+                                    ScheduleData(
+                                        title = title,
+                                        room = room,
+                                        users_permissions_user = sharedPreferences.getString(
+                                            "id",
+                                            "0"
+                                        )!!.toInt()
+                                    )
+                                )
+                                val callUpdateSchedule = retrofit.updateSchedule(
+                                    id,
+                                    scheduleData
+                                )
+                                callUpdateSchedule.enqueue(
+                                    object : Callback<ApiResponse<schedules>> {
+                                        override fun onResponse(
+                                            call: Call<ApiResponse<schedules>>,
+                                            response: Response<ApiResponse<schedules>>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Saved",
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                    .show()
+                                            } else {
+                                                try {
+                                                    val jObjError =
+                                                        JSONObject(response.errorBody()!!.string())
+                                                    Toast.makeText(
+                                                        context,
+                                                        jObjError.getJSONObject("error")
+                                                            .getString("message"),
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                } catch (e: Exception) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        e.message,
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                            }
+                                        }
 
+                                        override fun onFailure(
+                                            call: Call<ApiResponse<schedules>>,
+                                            t: Throwable
+                                        ) {
+                                            Toast.makeText(
+                                                context,
+                                                t.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+
+                                    }
+                                )
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -556,7 +628,66 @@ fun DetailSchedule(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                     ) {
                         Button(
-                            onClick = { /*TODO*/ },
+                            onClick = {
+                                val dateAndTimeData = DateAndTimeDataWrapper(
+                                    DateAndTimesData(
+                                        day = selectedDay,
+                                        start = formatterInput.format(parser.parse(start[index])),
+                                        end = formatterInput.format(parser.parse(end[index])),
+                                        schedule = id.toInt()
+                                    )
+                                )
+                                val callUpdateDateAndTime = retrofitDateAndTimes.updateDateAndTime(
+                                    dateAndTimes[index].id!!.toString(),
+                                    dateAndTimeData
+                                )
+                                callUpdateDateAndTime.enqueue(
+                                    object : Callback<ApiResponse<date_and_times>> {
+                                        override fun onResponse(
+                                            call: Call<ApiResponse<date_and_times>>,
+                                            response: Response<ApiResponse<date_and_times>>
+                                        ) {
+                                            if (response.isSuccessful) {
+                                                Toast.makeText(
+                                                    context,
+                                                    "Saved",
+                                                    Toast.LENGTH_LONG
+                                                )
+                                                    .show()
+                                            } else {
+                                                try {
+                                                    val jObjError =
+                                                        JSONObject(response.errorBody()!!.string())
+                                                    Toast.makeText(
+                                                        context,
+                                                        jObjError.getJSONObject("error")
+                                                            .getString("message"),
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                } catch (e: Exception) {
+                                                    Toast.makeText(
+                                                        context,
+                                                        e.message,
+                                                        Toast.LENGTH_LONG
+                                                    ).show()
+                                                }
+                                            }
+                                        }
+
+                                        override fun onFailure(
+                                            call: Call<ApiResponse<date_and_times>>,
+                                            t: Throwable
+                                        ) {
+                                            Toast.makeText(
+                                                context,
+                                                t.message,
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+
+                                    }
+                                )
+                            },
                             modifier = Modifier.weight(1f)
                         ) {
                             Text(text = "Save")
