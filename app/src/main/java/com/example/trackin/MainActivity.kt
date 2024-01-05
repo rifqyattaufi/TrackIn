@@ -41,7 +41,7 @@ class MainActivity : ComponentActivity() {
 
             val jwt = sharedPreferences.getString("jwt", "")
 
-            val baseUrl = "http://10.0.2.2:1337/api/"
+            val baseUrl = "https://api3.tnadam.me/api/"
 
             val startDestination: String = "ListSchedule"
 
