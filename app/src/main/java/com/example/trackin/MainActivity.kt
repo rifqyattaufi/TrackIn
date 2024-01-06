@@ -45,13 +45,13 @@ class MainActivity : ComponentActivity() {
 
             val baseUrl = "https://api3.tnadam.me/api/"
 
-//            val startDestination: String = "AddTask"
+            val startDestination: String = "ListTask"
 
-            val startDestination: String = if (jwt.equals("")) {
-                "SignIn"
-            } else {
-                "Home"
-            }
+//            val startDestination: String = if (jwt.equals("")) {
+//                "SignIn"
+//            } else {
+//                "Home"
+//            }
 
             AppTheme {
                 Surface(
@@ -138,7 +138,8 @@ class MainActivity : ComponentActivity() {
                                     ListTask(
                                         baseUrl = baseUrl,
                                         innerPadding = it,
-                                        navController = navController
+                                        navController = navController,
+                                        sharedPreferences = sharedPreferences
                                     )
                                 }
                             )
