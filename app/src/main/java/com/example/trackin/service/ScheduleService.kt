@@ -13,6 +13,12 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ScheduleService {
+    @GET("schedules")
+    fun getSchedules(
+        @Query("filters[users_permissions_user][id][\$eq]") id: String?,
+        @Query("sort") sort: String = "title"
+    ): Call<ApiResponse<List<schedules>>>
+
     @POST("schedules")
     fun addSchedule(@Body schedule: ScheduleDataWrapper): Call<ApiResponse<schedules>>
 

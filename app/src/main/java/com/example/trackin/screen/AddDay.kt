@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
 import androidx.compose.runtime.Composable
@@ -261,7 +260,6 @@ fun AddDay(
                     .clip(
                         shape = RoundedCornerShape(25.dp)
                     )
-                    .background(MaterialTheme.colorScheme.secondary)
                     .padding(18.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -309,9 +307,6 @@ fun AddDay(
                         label = { Text("Start") },
                         modifier = Modifier
                             .fillMaxWidth(fraction = .47f),
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        ),
                         readOnly = true,
                         trailingIcon = {
                             Icon(Icons.Filled.Schedule, "contentDescription",
@@ -322,9 +317,6 @@ fun AddDay(
                         value = end,
                         onValueChange = { end = it },
                         label = { Text("End") },
-                        colors = TextFieldDefaults.textFieldColors(
-                            containerColor = MaterialTheme.colorScheme.secondary
-                        ),
                         readOnly = true,
                         trailingIcon = {
                             Icon(Icons.Filled.Schedule, "contentDescription",

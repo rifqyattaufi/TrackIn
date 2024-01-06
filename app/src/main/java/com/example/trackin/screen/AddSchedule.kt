@@ -2,7 +2,6 @@ package com.example.trackin.screen
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -64,7 +61,6 @@ fun AddSchedule(
                     .clip(
                         shape = RoundedCornerShape(25.dp)
                     )
-                    .background(MaterialTheme.colorScheme.secondary)
                     .padding(18.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -74,9 +70,6 @@ fun AddSchedule(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = { Text("Title") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
                     keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Words)
                 )
                 OutlinedTextField(
@@ -85,9 +78,6 @@ fun AddSchedule(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = { Text("Room") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    )
                 )
                 OutlinedTextField(
                     value = meet,
@@ -99,9 +89,6 @@ fun AddSchedule(
                     modifier = Modifier
                         .fillMaxWidth(),
                     label = { Text("Meeting per Weeks") },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.secondary
-                    ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
             }

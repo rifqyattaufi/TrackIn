@@ -22,6 +22,7 @@ import com.example.compose.AppTheme
 import com.example.trackin.screen.AddDay
 import com.example.trackin.screen.AddDayOnly
 import com.example.trackin.screen.AddSchedule
+import com.example.trackin.screen.AddTask
 import com.example.trackin.screen.DetailSchedule
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.ListSchedule
@@ -44,7 +45,7 @@ class MainActivity : ComponentActivity() {
 
             val baseUrl = "https://api3.tnadam.me/api/"
 
-//            val startDestination: String = "ListSchedule"
+//            val startDestination: String = "AddTask"
 
             val startDestination: String = if (jwt.equals("")) {
                 "SignIn"
@@ -189,6 +190,20 @@ class MainActivity : ComponentActivity() {
                                 navController = navController,
                                 content = {
                                     Profile(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        navController = navController,
+                                        sharedPreferences = sharedPreferences
+                                    )
+                                }
+                            )
+                        }
+                        composable("AddTask") {
+                            ScaffoldLayout(
+                                title = "Add Task",
+                                navController = navController,
+                                content = {
+                                    AddTask(
                                         baseUrl = baseUrl,
                                         innerPadding = it,
                                         navController = navController,
