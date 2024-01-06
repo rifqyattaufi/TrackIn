@@ -24,12 +24,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.trackin.PreferencesManager
 import com.example.trackin.respond.ApiResponse
 import com.example.trackin.respond.date_and_times
+import com.example.trackin.respond.schedules
+import com.example.trackin.service.TaskService
 import com.example.trackin.service.date_and_time_service
 import org.json.JSONObject
 import retrofit2.Call
@@ -49,8 +52,59 @@ fun Home(
     context: Context = LocalContext.current,
     innerPadding: PaddingValues
 ) {
-    val listSchedule = remember { mutableStateListOf<date_and_times>() }
     val preferencesManager = remember { PreferencesManager(context) }
+
+    val listTask = remember { mutableStateListOf<schedules>() }
+    val retrofitTask = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+        .create(TaskService::class.java)
+    val callTask = retrofitTask.getTaskHome(
+        id = preferencesManager.getData("id")
+    )
+    callTask.enqueue(
+        object : Callback<ApiResponse<List<schedules>>> {
+            override fun onResponse(
+                call: Call<ApiResponse<List<schedules>>>,
+                response: Response<ApiResponse<List<schedules>>>
+            ) {
+                if (response.isSuccessful) {
+                    listTask.clear()
+                    response.body()?.data!!.forEach { task ->
+                        listTask.add(task)
+                    }
+                } else {
+                    try {
+                        val jObjError =
+                            JSONObject(response.errorBody()!!.string())
+                        Toast.makeText(
+                            context,
+                            jObjError.getJSONObject("error")
+                                .getString("message"),
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } catch (e: Exception) {
+                        Toast.makeText(
+                            context,
+                            e.message,
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse<List<schedules>>>, t: Throwable) {
+                Toast.makeText(
+                    context,
+                    t.message,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    )
+
+    val listSchedule = remember { mutableStateListOf<date_and_times>() }
     val retrofit = Retrofit.Builder()
         .baseUrl(baseUrl)
         .addConverterFactory(GsonConverterFactory.create())
@@ -144,6 +198,13 @@ fun Home(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     val colorBorder = MaterialTheme.colorScheme.onBackground
+                    if (listSchedule.isEmpty()) {
+                        Text(
+                            text = "No schedule for today, happy holiday :)",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                     listSchedule.forEach { schedule ->
                         Column(
                             modifier = Modifier
@@ -179,7 +240,7 @@ fun Home(
                     .padding(vertical = 7.dp, horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
-                Text("Today Task", fontSize = 16.sp)
+                Text("Ongoing Task", fontSize = 16.sp)
             }
         }
         item {
@@ -200,47 +261,64 @@ fun Home(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     val colorBorder = MaterialTheme.colorScheme.onBackground
-                    Column(
-                        modifier = Modifier
-                            .drawBehind {
-                                val borderSize = 2.dp.toPx()
-                                drawLine(
-                                    color = colorBorder,
-                                    start = Offset(0f, size.height),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = borderSize
-                                )
-                            }
-                    ) {
-                        Text(text = "Verifikasi dan Validasi")
+                    if (listTask.isEmpty()) {
                         Text(
-                            text = "10.00-13.00",
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.fillMaxWidth()
+                            text = "No ongoing task",
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
                         )
-                        Text(text = "Class: 2.06")
                     }
-                    Column(
-                        modifier = Modifier
-                            .drawBehind {
-                                val borderSize = 2.dp.toPx()
-                                drawLine(
-                                    color = colorBorder,
-                                    start = Offset(0f, size.height),
-                                    end = Offset(size.width, size.height),
-                                    strokeWidth = borderSize
-                                )
+                    listTask.forEach { schedules ->
+                        Column {
+                            Text(
+                                text = schedules.attributes?.title!!,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Center,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            schedules.attributes?.tasks?.data?.forEach { task ->
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .drawBehind {
+                                            val borderSize = 2.dp.toPx()
+                                            drawLine(
+                                                color = colorBorder,
+                                                start = Offset(0f, size.height),
+                                                end = Offset(size.width, size.height),
+                                                strokeWidth = borderSize
+                                            )
+                                        }
+                                ) {
+                                    Text(text = task.attributes?.title!!)
+                                    Text(
+                                        text = "Deadline: " + SimpleDateFormat(
+                                            "dd MMMM yyyy HH:mm"
+                                        ).format(
+                                            SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").parse(
+                                                task.attributes?.deadline!!
+                                            )!!
+                                        ),
+                                    )
+                                    Text(
+                                        text = "Status: " +
+                                                if (task.attributes?.status!!) {
+                                                    "Done"
+                                                } else if (task.attributes?.deadline!! < SimpleDateFormat(
+                                                        "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+                                                    ).format(Date())
+                                                ) {
+                                                    "OVERDUE"
+                                                } else {
+                                                    "Not Done"
+                                                }
+                                    )
+                                }
                             }
-                    ) {
-                        Text(text = "Verifikasi dan Validasi")
-                        Text(
-                            text = "10.00-13.00",
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Text(text = "Class: 2.06")
+                        }
                     }
-
                 }
             }
         }

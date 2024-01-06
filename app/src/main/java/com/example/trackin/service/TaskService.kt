@@ -2,6 +2,7 @@ package com.example.trackin.service
 
 import com.example.trackin.data.TaskDataWrapper
 import com.example.trackin.respond.ApiResponse
+import com.example.trackin.respond.schedules
 import com.example.trackin.respond.tasks
 import retrofit2.Call
 import retrofit2.http.Body
@@ -22,4 +23,11 @@ interface TaskService {
     fun addTask(
         @Body task: TaskDataWrapper
     ): Call<ApiResponse<tasks>>
+
+    @GET("schedules")
+    fun getTaskHome(
+        @Query("filters[users_permissions_user][id][\$eq]") id: String?,
+        @Query("populate") populate: String = "tasks",
+        @Query("filters[tasks][status][\$eq]") status: Boolean = false
+    ): Call<ApiResponse<List<schedules>>>
 }

@@ -16,4 +16,6 @@ class attributes_schedule {
     var room: String? = null
 
     var date_and_times: ApiResponse<List<date_and_times>>? = null
+
+    var tasks: ApiResponse<List<tasks>>? = null
 }
