@@ -170,7 +170,15 @@ fun ListTask(
         ) {
             listSchedule.forEach {
                 stickyHeader {
-                    Text(text = it.attributes?.title!!)
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(25.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(vertical = 7.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
+                        Text(text = it.attributes?.title!!)
+                    }
                 }
                 item {
                     Column(
