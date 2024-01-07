@@ -298,7 +298,11 @@ fun ListTask(
                                                             call: Call<ApiResponse<tasks>>,
                                                             t: Throwable
                                                         ) {
-                                                            TODO("Not yet implemented")
+                                                            Toast.makeText(
+                                                                context,
+                                                                t.message,
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
                                                         }
 
                                                     }
@@ -312,7 +316,7 @@ fun ListTask(
                                             }
                                         }
                                         IconButton(onClick = {
-                                            TODO()
+                                            navController.navigate("EditTask/${it.id}")
                                         }) {
                                             Icon(
                                                 Icons.Outlined.Edit,

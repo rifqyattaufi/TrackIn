@@ -44,4 +44,10 @@ interface TaskService {
         @Path("id") id: String,
         @Body task: TaskDataWrapper
     ): Call<ApiResponse<tasks>>
+
+    @GET("tasks/{id}")
+    fun detailTask(
+        @Path("id") id: String,
+        @Query("populate") populate: String = "schedule",
+    ): Call<ApiResponse<tasks>>
 }

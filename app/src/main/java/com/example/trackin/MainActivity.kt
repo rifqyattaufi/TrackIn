@@ -24,6 +24,7 @@ import com.example.trackin.screen.AddDayOnly
 import com.example.trackin.screen.AddSchedule
 import com.example.trackin.screen.AddTask
 import com.example.trackin.screen.DetailSchedule
+import com.example.trackin.screen.EditTask
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.ListSchedule
 import com.example.trackin.screen.ListTask
@@ -210,6 +211,32 @@ class MainActivity : ComponentActivity() {
                                         navController = navController,
                                         sharedPreferences = sharedPreferences
                                     )
+                                }
+                            )
+                        }
+                        composable("EditTask/{id}") { it ->
+                            val id = it.arguments?.getString("id")
+                            ScaffoldLayout(
+                                title = "Task",
+                                navController = navController,
+                                content = {
+                                    EditTask(
+                                        baseUrl = baseUrl,
+                                        innerPadding = it,
+                                        id = id!!,
+                                        navController = navController,
+                                        sharedPreferences = sharedPreferences
+                                    )
+                                },
+                                action = {
+                                    IconButton(onClick = {
+                                        navController.popBackStack()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                            contentDescription = "back"
+                                        )
+                                    }
                                 }
                             )
                         }
