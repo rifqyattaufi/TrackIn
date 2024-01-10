@@ -6,6 +6,7 @@ import com.example.trackin.respond.schedules
 import com.example.trackin.respond.tasks
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
@@ -49,5 +50,10 @@ interface TaskService {
     fun updateTask(
         @Path("id") id: String,
         @Body task: TaskDataWrapper
+    ): Call<ApiResponse<tasks>>
+
+    @DELETE("tasks/{id}")
+    fun deleteTask(
+        @Path("id") id: String
     ): Call<ApiResponse<tasks>>
 }

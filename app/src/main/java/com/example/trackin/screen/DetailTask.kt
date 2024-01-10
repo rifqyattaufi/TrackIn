@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
@@ -88,6 +89,72 @@ fun DetailTask(
         .create(TaskService::class.java)
 
     var openAlertSchedule by remember { mutableStateOf(false) }
+
+    if (openAlertSchedule) {
+        AlertDialog(
+            onDismissRequest = {
+                openAlertSchedule = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val deleteTask = retrofitTask.deleteTask(id)
+                        deleteTask.enqueue(
+                            object : Callback<ApiResponse<tasks>> {
+                                override fun onResponse(
+                                    call: Call<ApiResponse<tasks>>,
+                                    response: Response<ApiResponse<tasks>>
+                                ) {
+                                    if (response.isSuccessful) {
+                                        Toast.makeText(context, "Deleted", Toast.LENGTH_SHORT)
+                                            .show()
+                                        navController.popBackStack()
+                                    } else {
+                                        try {
+                                            Toast.makeText(
+                                                context,
+                                                response.errorBody()?.string(),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } catch (e: Exception) {
+                                            Toast.makeText(context, e.message, Toast.LENGTH_SHORT)
+                                                .show()
+                                        }
+                                    }
+                                }
+
+                                override fun onFailure(
+                                    call: Call<ApiResponse<tasks>>,
+                                    t: Throwable
+                                ) {
+                                    Toast.makeText(context, t.message, Toast.LENGTH_SHORT).show()
+                                }
+
+                            }
+                        )
+                    }
+                ) {
+                    Text(text = "Confirm")
+                }
+            },
+            title = {
+                Text(text = "Delete ${titleData}?")
+            },
+            text = {
+                Text(text = "Are you sure want to delete this task?")
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        openAlertSchedule = false
+                    }
+                ) {
+                    Text(text = "Cancel")
+                }
+            },
+
+            )
+    }
 
     var title by remember { mutableStateOf(titleData) }
     var date by remember {
