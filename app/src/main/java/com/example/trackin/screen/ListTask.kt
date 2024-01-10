@@ -196,6 +196,7 @@ fun ListTask(
                     }
                 }
                 item {
+                    val scheduleId = it.id
                     Column(
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(25.dp))
@@ -331,7 +332,7 @@ fun ListTask(
                                             }
                                         }
                                         IconButton(onClick = {
-                                            navController.navigate("EditTask/${it.id}")
+                                            navController.navigate("EditTask/${it.id}/${scheduleId}/${it.attributes?.title}/${it.attributes?.deadline}/${it.attributes?.status}")
                                         }) {
                                             Icon(
                                                 Icons.Outlined.Edit,

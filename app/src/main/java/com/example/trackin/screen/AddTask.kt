@@ -87,7 +87,7 @@ fun AddTask(
     var selectedHour by remember { mutableIntStateOf(0) }
     var selectedMinute by remember { mutableIntStateOf(0) }
     var showDialog by remember { mutableStateOf(false) }
-    var timePickerState = remember {
+    val timePickerState = remember {
         TimePickerState(
             initialHour = selectedHour,
             initialMinute = selectedMinute,

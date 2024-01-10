@@ -24,7 +24,7 @@ import com.example.trackin.screen.AddDayOnly
 import com.example.trackin.screen.AddSchedule
 import com.example.trackin.screen.AddTask
 import com.example.trackin.screen.DetailSchedule
-import com.example.trackin.screen.EditTask
+import com.example.trackin.screen.DetailTask
 import com.example.trackin.screen.Home
 import com.example.trackin.screen.ListSchedule
 import com.example.trackin.screen.ListTask
@@ -214,18 +214,26 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
-                        composable("EditTask/{id}") { it ->
+                        composable("EditTask/{id}/{idSubject}/{title}/{deadline}/{status}") { it ->
                             val id = it.arguments?.getString("id")
+                            val title = it.arguments?.getString("title")
+                            val deadline = it.arguments?.getString("deadline")
+                            val status = it.arguments?.getString("status")
+                            val subjectId = it.arguments?.getString("idSubject")
                             ScaffoldLayout(
                                 title = "Task",
                                 navController = navController,
                                 content = {
-                                    EditTask(
+                                    DetailTask(
                                         baseUrl = baseUrl,
                                         innerPadding = it,
                                         id = id!!,
                                         navController = navController,
-                                        sharedPreferences = sharedPreferences
+                                        sharedPreferences = sharedPreferences,
+                                        subjectIdData = subjectId!!,
+                                        titleData = title!!,
+                                        deadlineData = deadline!!,
+                                        statusData = status!!
                                     )
                                 },
                                 action = {
