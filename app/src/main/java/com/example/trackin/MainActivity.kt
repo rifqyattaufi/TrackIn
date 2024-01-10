@@ -46,13 +46,13 @@ class MainActivity : ComponentActivity() {
 
             val baseUrl = "https://api3.tnadam.me/api/"
 
-            val startDestination: String = "ListTask"
+//            val startDestination: String = "ListTask"
 
-//            val startDestination: String = if (jwt.equals("")) {
-//                "SignIn"
-//            } else {
-//                "Home"
-//            }
+            val startDestination: String = if (jwt.equals("")) {
+                "SignIn"
+            } else {
+                "Home"
+            }
 
             AppTheme {
                 Surface(
