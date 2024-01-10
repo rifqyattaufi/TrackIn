@@ -348,13 +348,7 @@ fun AddTask(
                                 SimpleDateFormat("dd-MM-yyyy").parse(
                                     date
                                 )
-                            ) + "T" +
-                                    if (timeInput[0].toInt() + 1 < 25) {
-                                        (timeInput[0].toInt() + 1).toString()
-                                    } else {
-                                        "00"
-                                    }
-                                    + ":" + timeInput[1] + ":00",
+                            ) + "T" + timeInput[0] + ":" + timeInput[1] + ":00.000Z",
                             status = false,
                             schedule = selectedSchedule.toInt(),
                             users_permissions_user = sharedPreferences.getString("id", null)!!
