@@ -36,6 +36,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.trackin.data.TaskData
@@ -151,7 +154,10 @@ fun ListTask(
                     }
                     .clickable(onClick = {
                         navController.navigate("ListSchedule")
-                    }),
+                    })
+                    .semantics {
+                        text = AnnotatedString("ListSchedule")
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(text = "Schedule")

@@ -47,6 +47,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -117,7 +120,11 @@ fun Scaffold(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier
+                            .size(50.dp)
+                            .semantics {
+                                text = AnnotatedString("HomePage")
+                            },
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(Icons.Outlined.Home, contentDescription = "home")
@@ -129,7 +136,11 @@ fun Scaffold(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier
+                            .size(50.dp)
+                            .semantics {
+                                text = AnnotatedString("ListPage")
+                            },
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(Icons.Outlined.List, contentDescription = "list")
@@ -139,7 +150,11 @@ fun Scaffold(
                         colors = IconButtonDefaults.iconButtonColors(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
-                        modifier = Modifier.size(50.dp)
+                        modifier = Modifier
+                            .size(50.dp)
+                            .semantics {
+                                text = AnnotatedString("AddToggle")
+                            }
                     ) {
                         Icon(
                             Icons.Rounded.Add,
@@ -158,7 +173,11 @@ fun Scaffold(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier
+                            .size(50.dp)
+                            .semantics {
+                                text = AnnotatedString("NotificationPage")
+                            },
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(Icons.Outlined.Notifications, contentDescription = "home")
@@ -170,7 +189,11 @@ fun Scaffold(
                             contentColor = MaterialTheme.colorScheme.onBackground
                         ),
                         shape = CircleShape,
-                        modifier = Modifier.size(50.dp),
+                        modifier = Modifier
+                            .size(50.dp)
+                            .semantics {
+                                text = AnnotatedString("ProfilePage")
+                            },
                         contentPadding = PaddingValues(0.dp)
                     ) {
                         Icon(Icons.Outlined.AccountCircle, contentDescription = "home")
@@ -205,7 +228,11 @@ fun Scaffold(
                         onClick = {
                             navController.navigate("AddSchedule")
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics {
+                                text = AnnotatedString("AddSchedule")
+                            }
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
@@ -226,7 +253,11 @@ fun Scaffold(
                         onClick = {
                             navController.navigate("AddTask")
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics {
+                                text = AnnotatedString("AddTask")
+                            }
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

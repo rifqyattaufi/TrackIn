@@ -81,4 +81,7 @@ dependencies {
 
     //material
     implementation("androidx.compose.material3:material3:1.2.0-beta01")
+
+    //notifiation
+    implementation("com.google.accompanist:accompanist-permissions:0.31.1-alpha")
 }

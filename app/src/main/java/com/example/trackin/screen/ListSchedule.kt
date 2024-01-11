@@ -34,6 +34,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.text
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -202,7 +205,10 @@ fun ListSchedule(
                     }
                     .clickable(onClick = {
                         navController.navigate("ListTask")
-                    }),
+                    })
+                    .semantics {
+                        text = AnnotatedString("ListTask")
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Task")
