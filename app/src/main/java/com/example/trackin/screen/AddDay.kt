@@ -1,7 +1,11 @@
 package com.example.trackin.screen
 
 import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.util.Log
@@ -57,6 +61,7 @@ import com.example.trackin.data.DateAndTimeDataWrapper
 import com.example.trackin.data.DateAndTimesData
 import com.example.trackin.data.ScheduleData
 import com.example.trackin.data.ScheduleDataWrapper
+import com.example.trackin.notification.NotificationReceiver
 import com.example.trackin.respond.ApiResponse
 import com.example.trackin.respond.date_and_times
 import com.example.trackin.respond.schedules
@@ -69,6 +74,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
+import java.util.Calendar
 
 @SuppressLint("SimpleDateFormat")
 @RequiresApi(Build.VERSION_CODES.O)
@@ -407,7 +413,11 @@ fun AddDay(
                                                         response: Response<ApiResponse<date_and_times>>
                                                     ) {
                                                         if (response.isSuccessful) {
-                                                            Log.d("TAG", "success")
+                                                            scheduleNotification(
+                                                                context,
+                                                                dateAndTimeData,
+                                                                response.body()?.data?.id!!.toInt()
+                                                            )
                                                         } else {
                                                             try {
                                                                 val jObjError =
@@ -464,4 +474,73 @@ fun AddDay(
         }
     }
 }
+
+fun scheduleNotification(
+    context: Context,
+    dateAndTimes: DateAndTimesData,
+    notificationId: Int
+) {
+    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+    val intent = Intent(context, NotificationManager::class.java)
+    intent.putExtra(NotificationReceiver.NOTIFICATION_ID_EXTRA.toString(), notificationId)
+
+    val pendingIntent = PendingIntent.getBroadcast(
+        context,
+        notificationId,
+        intent,
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    )
+
+    val calendar = Calendar.getInstance()
+    when (dateAndTimes.day) {
+        "Monday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 1)
+        }
+
+        "Tuesday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 2)
+        }
+
+        "Wednesday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 3)
+        }
+
+        "Thursday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 4)
+        }
+
+        "Friday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 5)
+        }
+
+        "Saturday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 6)
+        }
+
+        "Sunday" -> {
+            calendar.set(Calendar.DAY_OF_WEEK, 7)
+        }
+    }
+    calendar.set(Calendar.HOUR_OF_DAY, dateAndTimes.start.split(":")[0].toInt())
+    calendar.set(Calendar.MINUTE, dateAndTimes.start.split(":")[1].toInt() - 30)
+    calendar.set(Calendar.SECOND, 0)
+
+    val triggerAtMillis = calendar.timeInMillis
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            triggerAtMillis,
+            pendingIntent
+        )
+    } else {
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            triggerAtMillis,
+            pendingIntent
+        )
+    }
+}
+
 
