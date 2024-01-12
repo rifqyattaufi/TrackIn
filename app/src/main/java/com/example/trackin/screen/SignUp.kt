@@ -240,7 +240,6 @@ fun SignUp(
             Button(
                 onClick = {
                     if (password != confirmPassword) {
-
                         Toast
                             .makeText(
                                 context,

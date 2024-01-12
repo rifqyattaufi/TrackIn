@@ -280,66 +280,76 @@ fun DetailSchedule(
                     ) {
                         Button(
                             onClick = {
-                                val scheduleData = ScheduleDataWrapper(
-                                    ScheduleData(
-                                        title = title,
-                                        room = room,
-                                        users_permissions_user = sharedPreferences.getString(
-                                            "id",
-                                            "0"
-                                        )!!.toInt()
+                                if (room.isEmpty() || title.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fill all the field",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    val scheduleData = ScheduleDataWrapper(
+                                        ScheduleData(
+                                            title = title,
+                                            room = room,
+                                            users_permissions_user = sharedPreferences.getString(
+                                                "id",
+                                                "0"
+                                            )!!.toInt()
+                                        )
                                     )
-                                )
-                                val callUpdateSchedule = retrofit.updateSchedule(
-                                    id,
-                                    scheduleData
-                                )
-                                callUpdateSchedule.enqueue(
-                                    object : Callback<ApiResponse<schedules>> {
-                                        override fun onResponse(
-                                            call: Call<ApiResponse<schedules>>,
-                                            response: Response<ApiResponse<schedules>>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Saved",
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                    .show()
-                                            } else {
-                                                try {
-                                                    val jObjError =
-                                                        JSONObject(response.errorBody()!!.string())
+                                    val callUpdateSchedule = retrofit.updateSchedule(
+                                        id,
+                                        scheduleData
+                                    )
+                                    callUpdateSchedule.enqueue(
+                                        object : Callback<ApiResponse<schedules>> {
+                                            override fun onResponse(
+                                                call: Call<ApiResponse<schedules>>,
+                                                response: Response<ApiResponse<schedules>>
+                                            ) {
+                                                if (response.isSuccessful) {
                                                     Toast.makeText(
                                                         context,
-                                                        jObjError.getJSONObject("error")
-                                                            .getString("message"),
+                                                        "Saved",
                                                         Toast.LENGTH_LONG
-                                                    ).show()
-                                                } catch (e: Exception) {
-                                                    Toast.makeText(
-                                                        context,
-                                                        e.message,
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
+                                                    )
+                                                        .show()
+                                                } else {
+                                                    try {
+                                                        val jObjError =
+                                                            JSONObject(
+                                                                response.errorBody()!!.string()
+                                                            )
+                                                        Toast.makeText(
+                                                            context,
+                                                            jObjError.getJSONObject("error")
+                                                                .getString("message"),
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            e.message,
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        override fun onFailure(
-                                            call: Call<ApiResponse<schedules>>,
-                                            t: Throwable
-                                        ) {
-                                            Toast.makeText(
-                                                context,
-                                                t.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                            override fun onFailure(
+                                                call: Call<ApiResponse<schedules>>,
+                                                t: Throwable
+                                            ) {
+                                                Toast.makeText(
+                                                    context,
+                                                    t.message,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
 
-                                    }
-                                )
+                                        }
+                                    )
+                                }
                             },
                             modifier = Modifier.weight(1f)
                         ) {
@@ -629,64 +639,75 @@ fun DetailSchedule(
                     ) {
                         Button(
                             onClick = {
-                                val dateAndTimeData = DateAndTimeDataWrapper(
-                                    DateAndTimesData(
-                                        day = selectedDay,
-                                        start = formatterInput.format(parser.parse(start[index])),
-                                        end = formatterInput.format(parser.parse(end[index])),
-                                        schedule = id.toInt()
+                                if (start[index].isEmpty() || end[index].isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fill all the field",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                } else {
+                                    val dateAndTimeData = DateAndTimeDataWrapper(
+                                        DateAndTimesData(
+                                            day = selectedDay,
+                                            start = formatterInput.format(parser.parse(start[index])),
+                                            end = formatterInput.format(parser.parse(end[index])),
+                                            schedule = id.toInt()
+                                        )
                                     )
-                                )
-                                val callUpdateDateAndTime = retrofitDateAndTimes.updateDateAndTime(
-                                    dateAndTimes[index].id!!.toString(),
-                                    dateAndTimeData
-                                )
-                                callUpdateDateAndTime.enqueue(
-                                    object : Callback<ApiResponse<date_and_times>> {
-                                        override fun onResponse(
-                                            call: Call<ApiResponse<date_and_times>>,
-                                            response: Response<ApiResponse<date_and_times>>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                Toast.makeText(
-                                                    context,
-                                                    "Saved",
-                                                    Toast.LENGTH_LONG
-                                                )
-                                                    .show()
-                                            } else {
-                                                try {
-                                                    val jObjError =
-                                                        JSONObject(response.errorBody()!!.string())
+                                    val callUpdateDateAndTime =
+                                        retrofitDateAndTimes.updateDateAndTime(
+                                            dateAndTimes[index].id!!.toString(),
+                                            dateAndTimeData
+                                        )
+                                    callUpdateDateAndTime.enqueue(
+                                        object : Callback<ApiResponse<date_and_times>> {
+                                            override fun onResponse(
+                                                call: Call<ApiResponse<date_and_times>>,
+                                                response: Response<ApiResponse<date_and_times>>
+                                            ) {
+                                                if (response.isSuccessful) {
                                                     Toast.makeText(
                                                         context,
-                                                        jObjError.getJSONObject("error")
-                                                            .getString("message"),
+                                                        "Saved",
                                                         Toast.LENGTH_LONG
-                                                    ).show()
-                                                } catch (e: Exception) {
-                                                    Toast.makeText(
-                                                        context,
-                                                        e.message,
-                                                        Toast.LENGTH_LONG
-                                                    ).show()
+                                                    )
+                                                        .show()
+                                                } else {
+                                                    try {
+                                                        val jObjError =
+                                                            JSONObject(
+                                                                response.errorBody()!!.string()
+                                                            )
+                                                        Toast.makeText(
+                                                            context,
+                                                            jObjError.getJSONObject("error")
+                                                                .getString("message"),
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            e.message,
+                                                            Toast.LENGTH_LONG
+                                                        ).show()
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        override fun onFailure(
-                                            call: Call<ApiResponse<date_and_times>>,
-                                            t: Throwable
-                                        ) {
-                                            Toast.makeText(
-                                                context,
-                                                t.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        }
+                                            override fun onFailure(
+                                                call: Call<ApiResponse<date_and_times>>,
+                                                t: Throwable
+                                            ) {
+                                                Toast.makeText(
+                                                    context,
+                                                    t.message,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
 
-                                    }
-                                )
+                                        }
+                                    )
+                                }
                             },
                             modifier = Modifier.weight(1f)
                         ) {

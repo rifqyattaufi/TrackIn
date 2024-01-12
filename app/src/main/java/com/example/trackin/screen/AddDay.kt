@@ -349,125 +349,135 @@ fun AddDay(
                 }) {
                     Text(text = "Previous")
                 }
-                Button(onClick = {
-                    dateAndTimesData.add(
-                        DateAndTimesData(
-                            mSelectedText,
-                            start,
-                            end,
-                            0
-                        )
-                    )
-                    if (meet > 1) {
-                        mSelectedText = ""
-                        start = ""
-                        end = ""
-                        meet -= 1
-                        if (meet == 1) {
-                            nextOrSubmit = "Submit"
-                        }
+                Button(onClick =
+                {
+                    if (mSelectedText.isEmpty() || start.isEmpty() || end.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Please fill all the fields",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
-                        val scheduleData = ScheduleDataWrapper(
-                            ScheduleData(
-                                titleData!!,
-                                roomData!!,
-                                sharedPreferences.getString("id", "0")!!.toInt()
+                        dateAndTimesData.add(
+                            DateAndTimesData(
+                                mSelectedText,
+                                start,
+                                end,
+                                0
                             )
                         )
-                        val retrofit = Retrofit
-                            .Builder()
-                            .baseUrl(baseUrl)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-                            .create(ScheduleService::class.java)
-                        val call = retrofit.addSchedule(scheduleData)
-                        call.enqueue(
-                            object : Callback<ApiResponse<schedules>> {
-                                override fun onResponse(
-                                    call: Call<ApiResponse<schedules>>,
-                                    response: Response<ApiResponse<schedules>>
-                                ) {
-                                    if (response.isSuccessful) {
-                                        val schedule = response.body()!!.data
-                                        dateAndTimesData.forEach {
-                                            val dateAndTimeData = DateAndTimesData(
-                                                it.day,
-                                                formatterInput.format(parser.parse(it.start)),
-                                                formatterInput.format(parser.parse(it.end)),
-                                                schedule!!.id!!
-                                            )
-                                            val retrofit2 = Retrofit
-                                                .Builder()
-                                                .baseUrl(baseUrl)
-                                                .addConverterFactory(GsonConverterFactory.create())
-                                                .build()
-                                                .create(DateAndTimeService::class.java)
-                                            val call2 = retrofit2.addDateAndTime(
-                                                DateAndTimeDataWrapper(dateAndTimeData)
-                                            )
-                                            call2.enqueue(
-                                                object :
-                                                    Callback<ApiResponse<date_and_times>> {
-                                                    override fun onResponse(
-                                                        call: Call<ApiResponse<date_and_times>>,
-                                                        response: Response<ApiResponse<date_and_times>>
-                                                    ) {
-                                                        if (response.isSuccessful) {
-                                                            scheduleNotification(
-                                                                context,
-                                                                dateAndTimeData,
-                                                                response.body()?.data?.id!!.toInt()
-                                                            )
-                                                        } else {
-                                                            try {
-                                                                val jObjError =
-                                                                    JSONObject(
-                                                                        response.errorBody()!!
-                                                                            .string()
-                                                                    )
-                                                                Toast.makeText(
+                        if (meet > 1) {
+                            mSelectedText = ""
+                            start = ""
+                            end = ""
+                            meet -= 1
+                            if (meet == 1) {
+                                nextOrSubmit = "Submit"
+                            }
+                        } else {
+                            val scheduleData = ScheduleDataWrapper(
+                                ScheduleData(
+                                    titleData!!,
+                                    roomData!!,
+                                    sharedPreferences.getString("id", "0")!!.toInt()
+                                )
+                            )
+                            val retrofit = Retrofit
+                                .Builder()
+                                .baseUrl(baseUrl)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build()
+                                .create(ScheduleService::class.java)
+                            val call = retrofit.addSchedule(scheduleData)
+                            call.enqueue(
+                                object : Callback<ApiResponse<schedules>> {
+                                    override fun onResponse(
+                                        call: Call<ApiResponse<schedules>>,
+                                        response: Response<ApiResponse<schedules>>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            val schedule = response.body()!!.data
+                                            dateAndTimesData.forEach {
+                                                val dateAndTimeData = DateAndTimesData(
+                                                    it.day,
+                                                    formatterInput.format(parser.parse(it.start)),
+                                                    formatterInput.format(parser.parse(it.end)),
+                                                    schedule!!.id!!
+                                                )
+                                                val retrofit2 = Retrofit
+                                                    .Builder()
+                                                    .baseUrl(baseUrl)
+                                                    .addConverterFactory(GsonConverterFactory.create())
+                                                    .build()
+                                                    .create(DateAndTimeService::class.java)
+                                                val call2 = retrofit2.addDateAndTime(
+                                                    DateAndTimeDataWrapper(dateAndTimeData)
+                                                )
+                                                call2.enqueue(
+                                                    object :
+                                                        Callback<ApiResponse<date_and_times>> {
+                                                        override fun onResponse(
+                                                            call: Call<ApiResponse<date_and_times>>,
+                                                            response: Response<ApiResponse<date_and_times>>
+                                                        ) {
+                                                            if (response.isSuccessful) {
+                                                                scheduleNotification(
                                                                     context,
-                                                                    jObjError.getJSONObject(
-                                                                        "error"
-                                                                    )
-                                                                        .getString("message"),
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
-                                                            } catch (e: Exception) {
-                                                                Toast.makeText(
-                                                                    context,
-                                                                    e.message,
-                                                                    Toast.LENGTH_LONG
-                                                                ).show()
+                                                                    dateAndTimeData,
+                                                                    response.body()?.data?.id!!.toInt()
+                                                                )
+                                                            } else {
+                                                                try {
+                                                                    val jObjError =
+                                                                        JSONObject(
+                                                                            response.errorBody()!!
+                                                                                .string()
+                                                                        )
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        jObjError.getJSONObject(
+                                                                            "error"
+                                                                        )
+                                                                            .getString("message"),
+                                                                        Toast.LENGTH_LONG
+                                                                    ).show()
+                                                                } catch (e: Exception) {
+                                                                    Toast.makeText(
+                                                                        context,
+                                                                        e.message,
+                                                                        Toast.LENGTH_LONG
+                                                                    ).show()
+                                                                }
                                                             }
                                                         }
-                                                    }
 
-                                                    override fun onFailure(
-                                                        call: Call<ApiResponse<date_and_times>>,
-                                                        t: Throwable
-                                                    ) {
-                                                        Log.d("TAG", "fail")
-                                                    }
+                                                        override fun onFailure(
+                                                            call: Call<ApiResponse<date_and_times>>,
+                                                            t: Throwable
+                                                        ) {
+                                                            Log.d("TAG", "fail")
+                                                        }
 
-                                                }
-                                            )
+                                                    }
+                                                )
+                                            }
+                                            navController.navigate("home")
                                         }
-                                        navController.navigate("home")
                                     }
-                                }
 
-                                override fun onFailure(
-                                    call: Call<ApiResponse<schedules>>,
-                                    t: Throwable
-                                ) {
-                                    TODO("Not yet implemented")
-                                }
+                                    override fun onFailure(
+                                        call: Call<ApiResponse<schedules>>,
+                                        t: Throwable
+                                    ) {
+                                        TODO("Not yet implemented")
+                                    }
 
-                            }
-                        )
+                                }
+                            )
+                        }
                     }
-                }) {
+                }
+                ) {
                     Text(text = nextOrSubmit)
                 }
             }

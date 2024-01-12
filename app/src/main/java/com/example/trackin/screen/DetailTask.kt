@@ -97,7 +97,8 @@ fun DetailTask(
             },
             confirmButton = {
                 TextButton(
-                    onClick = {
+                    onClick =
+                    {
                         val deleteTask = retrofitTask.deleteTask(id)
                         deleteTask.enqueue(
                             object : Callback<ApiResponse<tasks>> {
@@ -513,55 +514,71 @@ fun DetailTask(
                     ) {
                         Button(
                             onClick = {
-                                val updateTaskData = TaskDataWrapper(
-                                    data = TaskData(
-                                        title = title,
-                                        deadline = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(
-                                            SimpleDateFormat("dd-MM-yyyy HH:mm").parse(
-                                                "$date $time"
-                                            )!!
-                                        ),
-                                        status = status,
-                                        schedule = selectedSchedule.toInt()
+                                if (title.isEmpty() || date.isEmpty() || time.isEmpty()) {
+                                    Toast.makeText(
+                                        context,
+                                        "Please fill all the fields",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    val updateTaskData = TaskDataWrapper(
+                                        data = TaskData(
+                                            title = title,
+                                            deadline = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'").format(
+                                                SimpleDateFormat("dd-MM-yyyy HH:mm").parse(
+                                                    "$date $time"
+                                                )!!
+                                            ),
+                                            status = status,
+                                            schedule = selectedSchedule.toInt()
+                                        )
                                     )
-                                )
-                                val updateTask = retrofitTask.updateTask(id, updateTaskData)
-                                updateTask.enqueue(
-                                    object : Callback<ApiResponse<tasks>> {
-                                        override fun onResponse(
-                                            call: Call<ApiResponse<tasks>>,
-                                            response: Response<ApiResponse<tasks>>
-                                        ) {
-                                            if (response.isSuccessful) {
-                                                Toast.makeText(context, "Saved", Toast.LENGTH_SHORT)
-                                                    .show()
-                                            } else {
-                                                try {
+                                    val updateTask = retrofitTask.updateTask(id, updateTaskData)
+                                    updateTask.enqueue(
+                                        object : Callback<ApiResponse<tasks>> {
+                                            override fun onResponse(
+                                                call: Call<ApiResponse<tasks>>,
+                                                response: Response<ApiResponse<tasks>>
+                                            ) {
+                                                if (response.isSuccessful) {
                                                     Toast.makeText(
                                                         context,
-                                                        response.errorBody()?.string(),
+                                                        "Saved",
                                                         Toast.LENGTH_SHORT
-                                                    ).show()
-                                                } catch (e: Exception) {
-                                                    Toast.makeText(
-                                                        context,
-                                                        e.message,
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
+                                                    )
+                                                        .show()
+                                                } else {
+                                                    try {
+                                                        Toast.makeText(
+                                                            context,
+                                                            response.errorBody()?.string(),
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    } catch (e: Exception) {
+                                                        Toast.makeText(
+                                                            context,
+                                                            e.message,
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
                                                 }
                                             }
-                                        }
 
-                                        override fun onFailure(
-                                            call: Call<ApiResponse<tasks>>,
-                                            t: Throwable
-                                        ) {
-                                            Toast.makeText(context, t.message, Toast.LENGTH_SHORT)
-                                                .show()
-                                        }
+                                            override fun onFailure(
+                                                call: Call<ApiResponse<tasks>>,
+                                                t: Throwable
+                                            ) {
+                                                Toast.makeText(
+                                                    context,
+                                                    t.message,
+                                                    Toast.LENGTH_SHORT
+                                                )
+                                                    .show()
+                                            }
 
-                                    }
-                                )
+                                        }
+                                    )
+                                }
                             },
                             modifier = Modifier.weight(1f)
                         ) {

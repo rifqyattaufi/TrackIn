@@ -336,9 +336,10 @@ fun AddTask(
             )
         }
         Button(
-            onClick = {
+            onClick =
+            {
                 if (title.isEmpty() || date.isEmpty() || time.isEmpty() || selectedSchedule.isEmpty()) {
-                    showDialog = true
+                    Toast.makeText(context, "Please fill all the fields", Toast.LENGTH_SHORT).show()
                 } else {
                     val timeInput = time.split(":")
                     val taskDataWrapper = TaskDataWrapper(

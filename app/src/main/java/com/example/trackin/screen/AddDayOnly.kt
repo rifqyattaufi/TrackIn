@@ -317,73 +317,80 @@ fun AddDayOnly(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 Button(onClick = {
-                    dateAndTimesData.add(
-                        DateAndTimesData(
-                            mSelectedText,
-                            start,
-                            end,
-                            0
+                    if (mSelectedText.isEmpty() || start.isEmpty() || end.isEmpty()) {
+                        Toast.makeText(
+                            context,
+                            "Please fill all the fields",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        dateAndTimesData.add(
+                            DateAndTimesData(
+                                mSelectedText,
+                                start,
+                                end,
+                                0
+                            )
                         )
-                    )
-                    dateAndTimesData.forEach {
-                        val dateAndTimeData = DateAndTimesData(
-                            it.day,
-                            formatterInput.format(parser.parse(it.start)),
-                            formatterInput.format(parser.parse(it.end)),
-                            id.toInt()
-                        )
-                        val retrofit2 = Retrofit
-                            .Builder()
-                            .baseUrl(baseUrl)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build()
-                            .create(DateAndTimeService::class.java)
-                        val call2 = retrofit2.addDateAndTime(
-                            DateAndTimeDataWrapper(dateAndTimeData)
-                        )
-                        call2.enqueue(
-                            object :
-                                Callback<ApiResponse<date_and_times>> {
-                                override fun onResponse(
-                                    call: Call<ApiResponse<date_and_times>>,
-                                    response: Response<ApiResponse<date_and_times>>
-                                ) {
-                                    if (response.isSuccessful) {
-                                        navController.popBackStack()
-                                    } else {
-                                        try {
-                                            val jObjError =
-                                                JSONObject(
-                                                    response.errorBody()!!
-                                                        .string()
-                                                )
-                                            Toast.makeText(
-                                                context,
-                                                jObjError.getJSONObject(
-                                                    "error"
-                                                )
-                                                    .getString("message"),
-                                                Toast.LENGTH_LONG
-                                            ).show()
-                                        } catch (e: Exception) {
-                                            Toast.makeText(
-                                                context,
-                                                e.message,
-                                                Toast.LENGTH_LONG
-                                            ).show()
+                        dateAndTimesData.forEach {
+                            val dateAndTimeData = DateAndTimesData(
+                                it.day,
+                                formatterInput.format(parser.parse(it.start)),
+                                formatterInput.format(parser.parse(it.end)),
+                                id.toInt()
+                            )
+                            val retrofit2 = Retrofit
+                                .Builder()
+                                .baseUrl(baseUrl)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build()
+                                .create(DateAndTimeService::class.java)
+                            val call2 = retrofit2.addDateAndTime(
+                                DateAndTimeDataWrapper(dateAndTimeData)
+                            )
+                            call2.enqueue(
+                                object :
+                                    Callback<ApiResponse<date_and_times>> {
+                                    override fun onResponse(
+                                        call: Call<ApiResponse<date_and_times>>,
+                                        response: Response<ApiResponse<date_and_times>>
+                                    ) {
+                                        if (response.isSuccessful) {
+                                            navController.popBackStack()
+                                        } else {
+                                            try {
+                                                val jObjError =
+                                                    JSONObject(
+                                                        response.errorBody()!!
+                                                            .string()
+                                                    )
+                                                Toast.makeText(
+                                                    context,
+                                                    jObjError.getJSONObject(
+                                                        "error"
+                                                    )
+                                                        .getString("message"),
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            } catch (e: Exception) {
+                                                Toast.makeText(
+                                                    context,
+                                                    e.message,
+                                                    Toast.LENGTH_LONG
+                                                ).show()
+                                            }
                                         }
                                     }
-                                }
 
-                                override fun onFailure(
-                                    call: Call<ApiResponse<date_and_times>>,
-                                    t: Throwable
-                                ) {
-                                    Log.d("TAG", "fail")
+                                    override fun onFailure(
+                                        call: Call<ApiResponse<date_and_times>>,
+                                        t: Throwable
+                                    ) {
+                                        Log.d("TAG", "fail")
+                                    }
                                 }
-
-                            }
-                        )
+                            )
+                        }
                     }
                 }
                 ) {
